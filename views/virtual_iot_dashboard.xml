@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Dashboard Template for OWL Component -->
+    <template id="DashboardTemplate" name="virtual_iot_connector.DashboardTemplate">
+        <div class="o_virtual_iot_dashboard p-3">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Virtual IoT Dashboard</h2>
+                <button class="btn btn-primary" t-on-click="loadDashboardData">
+                    <i class="fa fa-refresh"/> Refresh
+                </button>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div t-if="state.loading" class="text-center p-5">
+                <i class="fa fa-spinner fa-spin fa-3x text-muted"/>
+                <p class="mt-3 text-muted">Loading dashboard data...</p>
+            </div>
+
+            <div t-else="">
+                <!-- Statistics Cards -->
+                <div class="row mb-4">
+                    <div class="col-lg-3 col-md-6 col-sm-12 mb-3">
+                        <div class="card bg-primary text-white h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h5 class="card-title">Devices</h5>
+                                        <h2 t-esc="state.statistics.totalDevices"/>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fa fa-server fa-2x"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-primary border-0">
+                                <small>
+                                    <t t-esc="state.statistics.activeDevices"/> Active
+                                </small>
+                                <button class="btn btn-sm btn-light float-right" t-on-click="openDevicesList">
+                                    View All
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6 col-sm-12 mb-3">
+                        <div class="card bg-success text-white h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h5 class="card-title">Printers</h5>
+                                        <h2 t-esc="state.statistics.totalPrinters"/>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fa fa-print fa-2x"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-success border-0">
+                                <small>
+                                    <t t-esc="state.statistics.onlinePrinters"/> Online
+                                </small>
+                                <button class="btn btn-sm btn-light float-right" t-on-click="openPrintersList">
+                                    View All
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6 col-sm-12 mb-3">
+                        <div class="card bg-info text-white h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h5 class="card-title">Today's Jobs</h5>
+                                        <h2 t-esc="state.statistics.todayJobs"/>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fa fa-tasks fa-2x"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-info border-0">
+                                <small>
+                                    <t t-esc="state.statistics.successRate"/>% Success
+                                </small>
+                                <button class="btn btn-sm btn-light float-right" t-on-click="openPrintJobsList">
+                                    View All
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6 col-sm-12 mb-3">
+                        <div class="card bg-warning text-white h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h5 class="card-title">Failed Jobs</h5>
+                                        <h2 t-esc="state.statistics.failedJobs"/>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fa fa-exclamation-triangle fa-2x"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-warning border-0">
+                                <small>Last 24 hours</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Device Management Section -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Device Management</h5>
+                                <button class="btn btn-success btn-sm" t-on-click="createNewDevice">
+                                    <i class="fa fa-plus"/> Add Device
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div t-if="state.devices.length === 0" class="text-center text-muted p-4">
+                                    <i class="fa fa-server fa-3x mb-3"/>
+                                    <p>No devices configured yet</p>
+                                    <button class="btn btn-primary" t-on-click="createNewDevice">
+                                        Add Your First Device
+                                    </button>
+                                </div>
+                                <div t-else="" class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Device Name</th>
+                                                <th>IP Address</th>
+                                                <th>Status</th>
+                                                <th>Last Seen</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr t-foreach="state.devices" t-as="device" t-key="device.id">
+                                                <td>
+                                                    <strong t-esc="device.name"/>
+                                                    <br/>
+                                                    <small class="text-muted" t-esc="device.description"/>
+                                                </td>
+                                                <td t-esc="device.ip_address"/>
+                                                <td>
+                                                    <span t-if="device.is_active" class="badge badge-success">
+                                                        <i class="fa fa-check"/> Online
+                                                    </span>
+                                                    <span t-else="" class="badge badge-danger">
+                                                        <i class="fa fa-times"/> Offline
+                                                    </span>
+                                                </td>
+                                                <td t-esc="device.last_seen"/>
+                                                <td>
+                                                    <div class="btn-group btn-group-sm">
+                                                        <button class="btn btn-outline-primary" 
+                                                                t-on-click="() => this.testConnection(device.id)"
+                                                                title="Test Connection">
+                                                            <i class="fa fa-plug"/>
+                                                        </button>
+                                                        <button class="btn btn-outline-info" 
+                                                                t-on-click="() => this.syncPrinters(device.id)"
+                                                                title="Sync Printers">
+                                                            <i class="fa fa-refresh"/>
+                                                        </button>
+                                                        <button class="btn btn-outline-secondary" 
+                                                                t-on-click="() => this.editDevice(device.id)"
+                                                                title="Edit Device">
+                                                            <i class="fa fa-edit"/>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Print Jobs -->
+                <div class="row">
+                    <div class="col-lg-8 col-md-12">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Recent Print Jobs</h5>
+                                <button class="btn btn-outline-primary btn-sm" t-on-click="openPrintJobsList">
+                                    View All Jobs
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div t-if="state.recentJobs.length === 0" class="text-center text-muted p-4">
+                                    <i class="fa fa-print fa-2x mb-3"/>
+                                    <p>No recent print jobs</p>
+                                </div>
+                                <div t-else="" class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Job Name</th>
+                                                <th>Printer</th>
+                                                <th>Status</th>
+                                                <th>Time</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr t-foreach="state.recentJobs" t-as="job" t-key="job.id">
+                                                <td t-esc="job.name"/>
+                                                <td t-esc="job.printer_name"/>
+                                                <td>
+                                                    <span t-if="job.state === 'completed'" class="badge badge-success">
+                                                        Completed
+                                                    </span>
+                                                    <span t-elif="job.state === 'failed'" class="badge badge-danger">
+                                                        Failed
+                                                    </span>
+                                                    <span t-elif="job.state === 'printing'" class="badge badge-info">
+                                                        Printing
+                                                    </span>
+                                                    <span t-else="" class="badge badge-secondary">
+                                                        <t t-esc="job.state"/>
+                                                    </span>
+                                                </td>
+                                                <td t-esc="job.create_date"/>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="col-lg-4 col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Quick Actions</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-primary" t-on-click="createNewDevice">
+                                        <i class="fa fa-plus"/> Add New Device
+                                    </button>
+                                    <button class="btn btn-success" t-on-click="openDevicesList">
+                                        <i class="fa fa-server"/> Manage Devices
+                                    </button>
+                                    <button class="btn btn-info" t-on-click="openPrintersList">
+                                        <i class="fa fa-print"/> Manage Printers
+                                    </button>
+                                    <button class="btn btn-warning" t-on-click="openPrintJobsList">
+                                        <i class="fa fa-tasks"/> View Print Jobs
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+</odoo>

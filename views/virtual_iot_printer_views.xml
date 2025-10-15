@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Virtual IoT Printer Tree View -->
+    <record id="view_virtual_iot_printer_tree" model="ir.ui.view">
+        <field name="name">virtual.iot.printer.tree</field>
+        <field name="model">virtual.iot.printer</field>
+        <field name="type">list</field>
+        <field name="arch" type="xml">
+            <list string="Virtual IoT Printers" decoration-success="status=='ready'" decoration-danger="status=='error'" decoration-warning="status=='busy'" decoration-muted="status=='offline'">
+                <field name="name"/>
+                <field name="device_id"/>
+                <field name="printer_type" widget="badge"/>
+                <field name="connection_type" widget="badge"/>
+                <field name="device_path" optional="show"/>
+                <field name="ip_address" optional="show"/>
+                <field name="status" widget="badge" decoration-success="status=='ready'" decoration-danger="status=='error'" decoration-warning="status=='busy'" decoration-muted="status=='offline'"/>
+                <field name="last_job_time"/>
+                <field name="total_jobs"/>
+                <field name="successful_jobs"/>
+                <field name="failed_jobs"/>
+                <field name="active" invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Virtual IoT Printer Form View -->
+    <record id="view_virtual_iot_printer_form" model="ir.ui.view">
+        <field name="name">virtual.iot.printer.form</field>
+        <field name="model">virtual.iot.printer</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Virtual IoT Printer">
+                <header>
+                    <button name="test_printer" type="object" string="Test Print" class="btn-primary"/>
+                    <field name="status" widget="statusbar" statusbar_visible="ready,busy,offline,error"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="%(action_virtual_iot_print_job)d" type="action" class="oe_stat_button" icon="fa-tasks" context="{'default_printer_id': id}">
+                            <field name="total_jobs" widget="statinfo" string="Total Jobs"/>
+                        </button>
+                        <button name="%(action_virtual_iot_print_job)d" type="action" class="oe_stat_button" icon="fa-check" context="{'default_printer_id': id, 'search_default_success': 1}">
+                            <field name="successful_jobs" widget="statinfo" string="Successful"/>
+                        </button>
+                        <button name="%(action_virtual_iot_print_job)d" type="action" class="oe_stat_button" icon="fa-times" context="{'default_printer_id': id, 'search_default_failed': 1}">
+                            <field name="failed_jobs" widget="statinfo" string="Failed"/>
+                        </button>
+                    </div>
+                    
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" invisible="active"/>
+                    
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Printer Name"/>
+                        </h1>
+                    </div>
+                    
+                    <group>
+                        <group name="basic_info" string="Basic Information">
+                            <field name="device_id"/>
+                            <field name="printer_type"/>
+                            <field name="connection_type"/>
+                            <field name="device_path" invisible="connection_type == 'network'"/>
+                            <field name="ip_address" invisible="connection_type in ['usb', 'serial']"/>
+                            <field name="port" invisible="connection_type in ['usb', 'serial']"/>
+                            <field name="last_job_time" readonly="1"/>
+                            <field name="active"/>
+                        </group>
+                        <group name="statistics" string="Statistics">
+                            <field name="total_jobs" readonly="1"/>
+                            <field name="successful_jobs" readonly="1"/>
+                            <field name="failed_jobs" readonly="1"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Configuration" name="configuration">
+                            <group>
+                                <group name="paper_settings" string="Paper Settings">
+                                    <field name="paper_width"/>
+                                    <field name="paper_height"/>
+                                    <field name="dpi"/>
+                                </group>
+                                <group name="margins" string="Margins (mm)">
+                                    <field name="margin_top"/>
+                                    <field name="margin_bottom"/>
+                                    <field name="margin_left"/>
+                                    <field name="margin_right"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Print Jobs" name="print_jobs">
+                            <field name="print_job_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="layout_type"/>
+                                    <field name="status" widget="badge"/>
+                                    <field name="created_at"/>
+                                    <field name="completed_at"/>
+                                    <field name="duration"/>
+                                    <field name="user_id"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Virtual IoT Printer Search View -->
+    <record id="view_virtual_iot_printer_search" model="ir.ui.view">
+        <field name="name">virtual.iot.printer.search</field>
+        <field name="model">virtual.iot.printer</field>
+        <field name="type">search</field>
+        <field name="arch" type="xml">
+            <search string="Virtual IoT Printers">
+                <field name="name"/>
+                <field name="device_id"/>
+                <field name="printer_type"/>
+                <field name="status"/>
+                <separator/>
+                <filter string="Ready" name="ready" domain="[('status', '=', 'ready')]"/>
+                <filter string="Busy" name="busy" domain="[('status', '=', 'busy')]"/>
+                <filter string="Offline" name="offline" domain="[('status', '=', 'offline')]"/>
+                <filter string="Error" name="error" domain="[('status', '=', 'error')]"/>
+                <separator/>
+                <filter string="Receipt Printers" name="receipt" domain="[('printer_type', '=', 'receipt')]"/>
+                <filter string="Kitchen Printers" name="kitchen" domain="[('printer_type', '=', 'kitchen')]"/>
+                <filter string="Label Printers" name="label" domain="[('printer_type', '=', 'label')]"/>
+                <filter string="Report Printers" name="report" domain="[('printer_type', '=', 'report')]"/>
+                <separator/>
+                <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Archived" name="archived" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Device" name="group_device" context="{'group_by': 'device_id'}"/>
+                    <filter string="Type" name="group_type" context="{'group_by': 'printer_type'}"/>
+                    <filter string="Status" name="group_status" context="{'group_by': 'status'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Virtual IoT Printer Action -->
+    <record id="action_virtual_iot_printer" model="ir.actions.act_window">
+        <field name="name">Virtual IoT Printers</field>
+        <field name="res_model">virtual.iot.printer</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_virtual_iot_printer_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No printers found!
+            </p>
+            <p>
+                Printers are automatically detected when you sync with your Virtual IoT Device.
+                Make sure your Virtual IoT Service is running and click "Sync Printers" on your device.
+            </p>
+        </field>
+    </record>
+</odoo>

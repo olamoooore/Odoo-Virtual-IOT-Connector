@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Virtual IoT Security Groups -->
+        <record id="group_virtual_iot_user" model="res.groups">
+            <field name="name">Virtual IoT User</field>
+            <field name="category_id" ref="base.module_category_point_of_sale"/>
+            <field name="comment">Basic access to Virtual IoT functionality</field>
+        </record>
+
+        <record id="group_virtual_iot_manager" model="res.groups">
+            <field name="name">Virtual IoT Manager</field>
+            <field name="category_id" ref="base.module_category_point_of_sale"/>
+            <field name="implied_ids" eval="[(4, ref('group_virtual_iot_user'))]"/>
+            <field name="comment">Full access to Virtual IoT management</field>
+        </record>
+
+        <record id="group_virtual_iot_admin" model="res.groups">
+            <field name="name">Virtual IoT Administrator</field>
+            <field name="category_id" ref="base.module_category_administration"/>
+            <field name="implied_ids" eval="[(4, ref('group_virtual_iot_manager'))]"/>
+            <field name="comment">Administrative access to Virtual IoT security and configuration</field>
+        </record>
+
+        <!-- Add Virtual IoT Manager to Point of Sale Manager -->
+        <record id="point_of_sale.group_pos_manager" model="res.groups">
+            <field name="implied_ids" eval="[(4, ref('group_virtual_iot_manager'))]"/>
+        </record>
+
+        <!-- Add Virtual IoT User to Point of Sale User -->
+        <record id="point_of_sale.group_pos_user" model="res.groups">
+            <field name="implied_ids" eval="[(4, ref('group_virtual_iot_user'))]"/>
+        </record>
+    </data>
+</odoo>

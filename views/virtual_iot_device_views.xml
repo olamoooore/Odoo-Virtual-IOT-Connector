@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Virtual IoT Device Tree View -->
+    <record id="view_virtual_iot_device_tree" model="ir.ui.view">
+        <field name="name">virtual.iot.device.tree</field>
+        <field name="model">virtual.iot.device</field>
+        <field name="type">list</field>
+        <field name="arch" type="xml">
+            <list string="Virtual IoT Devices" decoration-success="status=='online'" decoration-danger="status=='error'" decoration-muted="status=='offline'">
+                <field name="name"/>
+                <field name="ip_address"/>
+                <field name="port"/>
+                <field name="status" widget="badge" decoration-success="status=='online'" decoration-danger="status=='error'" decoration-muted="status=='offline'"/>
+                <field name="last_seen"/>
+                <field name="printer_ids" widget="many2many_tags"/>
+                <field name="active" invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Virtual IoT Device Form View -->
+    <record id="view_virtual_iot_device_form" model="ir.ui.view">
+        <field name="name">virtual.iot.device.form</field>
+        <field name="model">virtual.iot.device</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Virtual IoT Device">
+                <header>
+                    <button name="test_connection" type="object" string="Test Connection" class="btn-primary"/>
+                    <button name="sync_printers" type="object" string="Sync Printers" class="btn-secondary"/>
+                    <button name="check_device_and_printer_status" type="object" string="Check Status" class="btn-info"/>
+                    <button name="regenerate_api_key" type="object" string="Regenerate API Key" class="btn-warning" confirm="This will invalidate the current API key. Continue?"/>
+                    <field name="status" widget="statusbar" statusbar_visible="offline,online,error"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="%(action_virtual_iot_printer)d" type="action" class="oe_stat_button" icon="fa-print" context="{'default_device_id': id}">
+                            <field name="printer_ids" widget="statinfo" string="Printers"/>
+                        </button>
+                        <button name="%(action_virtual_iot_print_job)d" type="action" class="oe_stat_button" icon="fa-tasks" context="{'default_device_id': id}">
+                            <field name="print_job_ids" widget="statinfo" string="Print Jobs"/>
+                        </button>
+                    </div>
+                    
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" invisible="active"/>
+                    
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Device Name"/>
+                        </h1>
+                    </div>
+                    
+                    <group>
+                        <group name="connection_info" string="Connection Information">
+                            <field name="ip_address"/>
+                            <field name="port"/>
+                            <field name="use_https"/>
+                            <field name="last_seen" readonly="1"/>
+                        </group>
+                        <group name="security" string="Security">
+                            <field name="api_key" password="True"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Printers" name="printers">
+                            <field name="printer_ids" context="{'default_device_id': id}">
+                                <list editable="bottom">
+                                    <field name="name"/>
+                                    <field name="printer_type"/>
+                                    <field name="status" widget="badge"/>
+                                    <field name="last_job_time"/>
+                                    <field name="active"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Print Jobs" name="print_jobs">
+                            <field name="print_job_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="printer_id"/>
+                                    <field name="layout_type"/>
+                                    <field name="status" widget="badge"/>
+                                    <field name="created_at"/>
+                                    <field name="duration"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Virtual IoT Device Search View -->
+    <record id="view_virtual_iot_device_search" model="ir.ui.view">
+        <field name="name">virtual.iot.device.search</field>
+        <field name="model">virtual.iot.device</field>
+        <field name="type">search</field>
+        <field name="arch" type="xml">
+            <search string="Virtual IoT Devices">
+                <field name="name"/>
+                <field name="ip_address"/>
+                <field name="status"/>
+                <separator/>
+                <filter string="Online" name="online" domain="[('status', '=', 'online')]"/>
+                <filter string="Offline" name="offline" domain="[('status', '=', 'offline')]"/>
+                <filter string="Error" name="error" domain="[('status', '=', 'error')]"/>
+                <separator/>
+                <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Archived" name="archived" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Status" name="group_status" context="{'group_by': 'status'}"/>
+                    <filter string="Last Seen" name="group_last_seen" context="{'group_by': 'last_seen'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Virtual IoT Device Action -->
+    <record id="action_virtual_iot_device" model="ir.actions.act_window">
+        <field name="name">Virtual IoT Devices</field>
+        <field name="res_model">virtual.iot.device</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_virtual_iot_device_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Virtual IoT Device!
+            </p>
+            <p>
+                Virtual IoT Devices replace physical IoT Boxes and enable seamless printer management.
+                Register devices from your local Virtual IoT Service to start printing.
+            </p>
+        </field>
+    </record>
+</odoo>

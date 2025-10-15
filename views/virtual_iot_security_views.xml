@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Security Log Views -->
+        <record id="view_virtual_iot_security_log_tree" model="ir.ui.view">
+            <field name="name">virtual.iot.security.log.tree</field>
+            <field name="model">virtual.iot.security.log</field>
+            <field name="type">list</field>
+            <field name="arch" type="xml">
+                <list string="Security Logs" default_order="timestamp desc" create="false" edit="false">
+                    <field name="timestamp"/>
+                    <field name="event_type"/>
+                    <field name="user_id"/>
+                    <field name="ip_address"/>
+                    <field name="device_id"/>
+                    <field name="printer_id"/>
+                    <field name="details"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_virtual_iot_security_log_form" model="ir.ui.view">
+            <field name="name">virtual.iot.security.log.form</field>
+            <field name="model">virtual.iot.security.log</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Security Log" create="false" edit="false">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="timestamp"/>
+                                <field name="event_type"/>
+                                <field name="user_id"/>
+                                <field name="ip_address"/>
+                            </group>
+                            <group>
+                                <field name="device_id"/>
+                                <field name="printer_id"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="details" nolabel="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_virtual_iot_security_log_search" model="ir.ui.view">
+            <field name="name">virtual.iot.security.log.search</field>
+            <field name="model">virtual.iot.security.log</field>
+            <field name="type">search</field>
+            <field name="arch" type="xml">
+                <search string="Security Logs">
+                    <field name="event_type"/>
+                    <field name="user_id"/>
+                    <field name="ip_address"/>
+                    <field name="device_id"/>
+                    <field name="printer_id"/>
+                    <field name="details"/>
+                    <filter string="Today" name="today" domain="[('timestamp', '&gt;=', datetime.datetime.combine(context_today(), datetime.time(0,0,0)))]"/>
+                    <filter string="This Week" name="this_week" domain="[('timestamp', '&gt;=', (context_today() - datetime.timedelta(days=7)).strftime('%Y-%m-%d'))]"/>
+                    <filter string="Unauthorized Access" name="unauthorized" domain="[('event_type', '=', 'unauthorized_access')]"/>
+                    <filter string="API Key Events" name="api_key_events" domain="[('event_type', 'in', ['api_key_generated', 'api_key_regenerated'])]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Event Type" name="group_event_type" context="{'group_by': 'event_type'}"/>
+                        <filter string="User" name="group_user" context="{'group_by': 'user_id'}"/>
+                        <filter string="Device" name="group_device" context="{'group_by': 'device_id'}"/>
+                        <filter string="Date" name="group_date" context="{'group_by': 'timestamp:day'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_virtual_iot_security_log" model="ir.actions.act_window">
+            <field name="name">Security Logs</field>
+            <field name="res_model">virtual.iot.security.log</field>
+            <field name="view_mode">list,form</field>
+            <field name="context">{'search_default_today': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No security events recorded yet!
+                </p>
+                <p>
+                    Security logs will appear here when Virtual IoT devices perform authenticated operations.
+                </p>
+            </field>
+        </record>
+
+        <!-- Access Control Views -->
+        <record id="view_virtual_iot_access_control_tree" model="ir.ui.view">
+            <field name="name">virtual.iot.access.control.tree</field>
+            <field name="model">virtual.iot.access.control</field>
+            <field name="type">list</field>
+            <field name="arch" type="xml">
+                <list string="Access Control Rules">
+                    <field name="name"/>
+                    <field name="active" widget="boolean_toggle"/>
+                    <field name="operations"/>
+                    <field name="time_restricted"/>
+                    <field name="allowed_days"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_virtual_iot_access_control_form" model="ir.ui.view">
+            <field name="name">virtual.iot.access.control.form</field>
+            <field name="model">virtual.iot.access.control</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Access Control Rule">
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Access Control Rule Name"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group string="User Access">
+                                <field name="allowed_users" widget="many2many_tags"/>
+                                <field name="allowed_groups" widget="many2many_tags"/>
+                            </group>
+                            <group string="Network Access">
+                                <field name="allowed_ip_addresses" placeholder="192.168.1.0/24&#10;10.0.0.1&#10;172.16.*"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="Time Restrictions">
+                                <field name="time_restricted"/>
+                                <field name="allowed_hours_start" invisible="not time_restricted"/>
+                                <field name="allowed_hours_end" invisible="not time_restricted"/>
+                                <field name="allowed_days" invisible="not time_restricted"/>
+                            </group>
+                            <group string="Operation Restrictions">
+                                <field name="operations"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_virtual_iot_access_control" model="ir.actions.act_window">
+            <field name="name">Access Control</field>
+            <field name="res_model">virtual.iot.access.control</field>
+            <field name="view_mode">list,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No access control rules defined!
+                </p>
+                <p>
+                    Create access control rules to restrict Virtual IoT operations based on users, IP addresses, time, and operation types.
+                </p>
+            </field>
+        </record>
+
+        <!-- Enhanced Device Views with Security Fields -->
+        <record id="view_virtual_iot_device_form_security" model="ir.ui.view">
+            <field name="name">virtual.iot.device.form.security</field>
+            <field name="model">virtual.iot.device</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="virtual_iot_connector.view_virtual_iot_device_form"/>
+            <field name="arch" type="xml">
+                <page name="printers" position="after">
+                    <page string="Security" name="security" groups="virtual_iot_connector.group_virtual_iot_manager">
+                        <group>
+                            <group string="Authentication">
+                                <field name="api_key" password="True" readonly="1"/>
+                                <field name="last_activity" readonly="1"/>
+                                <field name="failed_auth_attempts" readonly="1"/>
+                                <field name="blocked_until" readonly="1" invisible="not blocked_until"/>
+                            </group>
+                            <group string="Access Control">
+                                <field name="allowed_ip_addresses" placeholder="192.168.1.0/24&#10;10.0.0.1&#10;172.16.*"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="Rate Limiting">
+                                <field name="rate_limit_enabled"/>
+                                <field name="rate_limit_requests" invisible="not rate_limit_enabled"/>
+                            </group>
+                        </group>
+                        <group string="Security Events">
+                            <field name="security_log_ids" nolabel="1" readonly="1">
+                                <list limit="10">
+                                    <field name="timestamp"/>
+                                    <field name="event_type"/>
+                                    <field name="ip_address"/>
+                                    <field name="details"/>
+                                </list>
+                            </field>
+                        </group>
+                    </page>
+                </page>
+            </field>
+        </record>
+
+        <!-- Menu Items -->
+        <menuitem id="menu_virtual_iot_security" 
+                  name="Security" 
+                  parent="menu_virtual_iot_config" 
+                  sequence="20"
+                  groups="virtual_iot_connector.group_virtual_iot_admin"/>
+
+        <menuitem id="menu_virtual_iot_security_logs" 
+                  name="Security Logs" 
+                  parent="menu_virtual_iot_security" 
+                  action="action_virtual_iot_security_log" 
+                  sequence="10"/>
+
+        <menuitem id="menu_virtual_iot_access_control" 
+                  name="Access Control" 
+                  parent="menu_virtual_iot_security" 
+                  action="action_virtual_iot_access_control" 
+                  sequence="20"/>
+    </data>
+</odoo>

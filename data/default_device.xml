@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Virtual IoT Device Configuration -->
+        <record id="virtual_iot_device_default" model="virtual.iot.device">
+            <field name="name">Virtual IoT Device</field>
+            <field name="ip_address">semielastically-nontrigonometric-roosevelt.ngrok-free.dev</field>
+            <field name="port">443</field>
+            <field name="use_https">true</field>
+            <field name="api_key">wzF4RRthZIrGcaE5yofSyceK4ce31R9yFEJ2LEKOCN4</field>
+            <field name="active">True</field>
+        </record>
+    </data>
+</odoo>

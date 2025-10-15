@@ -1,0 +1,17 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_virtual_iot_device_user,virtual.iot.device.user,model_virtual_iot_device,group_virtual_iot_user,1,0,0,0
+access_virtual_iot_device_manager,virtual.iot.device.manager,model_virtual_iot_device,group_virtual_iot_manager,1,1,1,0
+access_virtual_iot_device_admin,virtual.iot.device.admin,model_virtual_iot_device,group_virtual_iot_admin,1,1,1,1
+access_virtual_iot_printer_user,virtual.iot.printer.user,model_virtual_iot_printer,group_virtual_iot_user,1,0,0,0
+access_virtual_iot_printer_manager,virtual.iot.printer.manager,model_virtual_iot_printer,group_virtual_iot_manager,1,1,1,1
+access_virtual_iot_printer_admin,virtual.iot.printer.admin,model_virtual_iot_printer,group_virtual_iot_admin,1,1,1,1
+access_virtual_iot_print_job_user,virtual.iot.print.job.user,model_virtual_iot_print_job,group_virtual_iot_user,1,0,1,0
+access_virtual_iot_print_job_manager,virtual.iot.print.job.manager,model_virtual_iot_print_job,group_virtual_iot_manager,1,1,1,1
+access_virtual_iot_print_job_admin,virtual.iot.print.job.admin,model_virtual_iot_print_job,group_virtual_iot_admin,1,1,1,1
+access_virtual_iot_security_user,virtual.iot.security.user,model_virtual_iot_security,group_virtual_iot_user,1,0,0,0
+access_virtual_iot_security_manager,virtual.iot.security.manager,model_virtual_iot_security,group_virtual_iot_manager,1,1,1,0
+access_virtual_iot_security_admin,virtual.iot.security.admin,model_virtual_iot_security,group_virtual_iot_admin,1,1,1,1
+access_virtual_iot_security_log_user,virtual.iot.security.log.user,model_virtual_iot_security_log,group_virtual_iot_user,1,0,0,0
+access_virtual_iot_security_log_manager,virtual.iot.security.log.manager,model_virtual_iot_security_log,group_virtual_iot_manager,1,0,0,0
+access_virtual_iot_security_log_admin,virtual.iot.security.log.admin,model_virtual_iot_security_log,group_virtual_iot_admin,1,1,1,1
+access_virtual_iot_access_control_admin,virtual.iot.access.control.admin,model_virtual_iot_access_control,group_virtual_iot_admin,1,1,1,1

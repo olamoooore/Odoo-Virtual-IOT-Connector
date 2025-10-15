@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Virtual IoT Configuration Parameters -->
+        <record id="virtual_iot_auto_sync_enabled" model="ir.config_parameter">
+            <field name="key">virtual_iot.auto_sync_enabled</field>
+            <field name="value">True</field>
+        </record>
+        
+        <record id="virtual_iot_sync_timeout" model="ir.config_parameter">
+            <field name="key">virtual_iot.sync_timeout</field>
+            <field name="value">10</field>
+        </record>
+        
+        <record id="virtual_iot_sync_retry_attempts" model="ir.config_parameter">
+            <field name="key">virtual_iot.sync_retry_attempts</field>
+            <field name="value">3</field>
+        </record>
+        
+        <record id="virtual_iot_fallback_to_manual" model="ir.config_parameter">
+            <field name="key">virtual_iot.fallback_to_manual</field>
+            <field name="value">True</field>
+        </record>
+        
+        <record id="virtual_iot_log_sync_events" model="ir.config_parameter">
+            <field name="key">virtual_iot.log_sync_events</field>
+            <field name="value">True</field>
+        </record>
+    </data>
+</odoo>

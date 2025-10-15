@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Inherit POS Config Form View -->
+    <record id="view_pos_config_form_inherit_virtual_iot" model="ir.ui.view">
+        <field name="name">pos.config.form.inherit.virtual.iot</field>
+        <field name="model">pos.config</field>
+        <field name="type">form</field>
+        <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@class='row mt16 o_settings_container']" position="after">
+                <div class="row mt16 o_settings_container">
+                    <setting string="Virtual IoT" help="Connect virtual IoT devices for printing">
+                        <field name="use_virtual_iot"/>
+                        <div class="content-group mt16" invisible="not use_virtual_iot">
+                            <div class="row">
+                                <div class="col-lg-4 o_light_label">
+                                    <label string="Virtual IoT Device" for="virtual_iot_device_id"/>
+                                </div>
+                                <div class="col-lg-8">
+                                    <field name="virtual_iot_device_id" required="use_virtual_iot"/>
+                                </div>
+                            </div>
+                            <div class="row" invisible="not virtual_iot_device_id">
+                                <div class="col-lg-4 o_light_label">
+                                    <span class="o_form_label">Actions</span>
+                                </div>
+                                <div class="col-lg-8">
+                                    <button name="test_virtual_iot_connection" type="object" string="Test Connection" class="btn-secondary me-2"/>
+                                    <button name="sync_virtual_iot_printers" type="object" string="Sync Printers" class="btn-secondary"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-4 o_light_label">
+                                    <label string="Receipt Printer" for="virtual_receipt_printer_id"/>
+                                </div>
+                                <div class="col-lg-8">
+                                    <field name="virtual_receipt_printer_id" invisible="not virtual_iot_device_id"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-4 o_light_label">
+                                    <label string="Kitchen Printer" for="virtual_kitchen_printer_id"/>
+                                </div>
+                                <div class="col-lg-8">
+                                    <field name="virtual_kitchen_printer_id" invisible="not virtual_iot_device_id"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-4 o_light_label">
+                                    <label string="Auto Print Receipt" for="virtual_iot_auto_print_receipt"/>
+                                </div>
+                                <div class="col-lg-8">
+                                    <field name="virtual_iot_auto_print_receipt"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-4 o_light_label">
+                                    <label string="Auto Print Kitchen" for="virtual_iot_auto_print_kitchen"/>
+                                </div>
+                                <div class="col-lg-8">
+                                    <field name="virtual_iot_auto_print_kitchen"/>
+                                </div>
+                            </div>
+                        </div>
+                    </setting>
+                </div>
+            </xpath>
+            
+            <!-- Add Virtual IoT tab to main tabs -->
+            <xpath expr="//field[@name='iface_print_via_proxy']" position="after">
+                <field name="use_virtual_iot"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Add Virtual IoT fields to POS Config Tree View -->
+    <record id="view_pos_config_tree_inherit_virtual_iot" model="ir.ui.view">
+        <field name="name">pos.config.tree.inherit.virtual.iot</field>
+        <field name="model">pos.config</field>
+        <field name="type">list</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_config_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field name="use_virtual_iot" widget="boolean_toggle"/>
+                <field name="virtual_iot_device_id" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Virtual IoT Print Job Views -->
+    <record id="view_virtual_iot_print_job_tree" model="ir.ui.view">
+        <field name="name">virtual.iot.print.job.tree</field>
+        <field name="model">virtual.iot.print.job</field>
+        <field name="type">list</field>
+        <field name="arch" type="xml">
+            <list string="Print Jobs" decoration-success="status=='success'" decoration-danger="status=='failed'" decoration-warning="status=='pending'" decoration-info="status=='processing'" decoration-muted="status=='cancelled'">
+                <field name="name"/>
+                <field name="device_name"/>
+                <field name="printer_name"/>
+                <field name="printer_type" widget="badge"/>
+                <field name="layout_type"/>
+                <field name="status" widget="badge" decoration-success="status=='success'" decoration-danger="status=='failed'" decoration-warning="status=='pending'" decoration-info="status=='processing'" decoration-muted="status=='cancelled'"/>
+                <field name="created_at"/>
+                <field name="completed_at"/>
+                <field name="duration" widget="float_time"/>
+                <field name="user_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_virtual_iot_print_job_form" model="ir.ui.view">
+        <field name="name">virtual.iot.print.job.form</field>
+        <field name="model">virtual.iot.print.job</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Print Job" create="false">
+                <header>
+                    <button name="retry_print_job" type="object" string="Retry" class="btn-primary" invisible="status not in ['failed', 'cancelled']"/>
+                    <button name="cancel_print_job" type="object" string="Cancel" class="btn-secondary" invisible="status not in ['pending', 'processing']"/>
+                    <button name="view_html_content" type="object" string="View HTML" class="btn-secondary"/>
+                    <field name="status" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    
+                    <group>
+                        <group name="job_info" string="Job Information">
+                            <field name="device_id"/>
+                            <field name="printer_id"/>
+                            <field name="layout_type"/>
+                            <field name="user_id"/>
+                        </group>
+                        <group name="timing" string="Timing">
+                            <field name="created_at"/>
+                            <field name="completed_at"/>
+                            <field name="duration" widget="float_time"/>
+                        </group>
+                    </group>
+                    
+                    <group name="source_info" string="Source Information" invisible="not source_model">
+                        <field name="source_model"/>
+                        <field name="source_id"/>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Response Data" name="response_data" invisible="not response_data">
+                            <field name="response_data" widget="text"/>
+                        </page>
+                        <page string="Error Message" name="error_message" invisible="not error_message">
+                            <field name="error_message" widget="text"/>
+                        </page>
+                        <page string="HTML Content" name="html_content">
+                            <field name="html_content" widget="html"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- HTML Content View (for popup) -->
+    <record id="view_virtual_iot_print_job_html_form" model="ir.ui.view">
+        <field name="name">virtual.iot.print.job.html.form</field>
+        <field name="model">virtual.iot.print.job</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="HTML Content">
+                <sheet>
+                    <field name="html_content" widget="html" readonly="1"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_virtual_iot_print_job_search" model="ir.ui.view">
+        <field name="name">virtual.iot.print.job.search</field>
+        <field name="model">virtual.iot.print.job</field>
+        <field name="type">search</field>
+        <field name="arch" type="xml">
+            <search string="Print Jobs">
+                <field name="name"/>
+                <field name="device_id"/>
+                <field name="printer_id"/>
+                <field name="user_id"/>
+                <separator/>
+                <filter string="Pending" name="pending" domain="[('status', '=', 'pending')]"/>
+                <filter string="Processing" name="processing" domain="[('status', '=', 'processing')]"/>
+                <filter string="Success" name="success" domain="[('status', '=', 'success')]"/>
+                <filter string="Failed" name="failed" domain="[('status', '=', 'failed')]"/>
+                <filter string="Cancelled" name="cancelled" domain="[('status', '=', 'cancelled')]"/>
+                <separator/>
+                <filter string="Receipt" name="receipt" domain="[('layout_type', '=', 'receipt')]"/>
+                <filter string="Kitchen" name="kitchen" domain="[('layout_type', '=', 'kitchen')]"/>
+                <filter string="Label" name="label" domain="[('layout_type', '=', 'label')]"/>
+                <filter string="Report" name="report" domain="[('layout_type', '=', 'report')]"/>
+                <separator/>
+                <filter string="Today" name="today" domain="[('created_at', '&gt;=', datetime.datetime.combine(context_today(), datetime.time(0,0,0)))]"/>
+                <filter string="This Week" name="this_week" domain="[('created_at', '&gt;=', (context_today() - datetime.timedelta(days=context_today().weekday())).strftime('%Y-%m-%d'))]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Device" name="group_device" context="{'group_by': 'device_id'}"/>
+                    <filter string="Printer" name="group_printer" context="{'group_by': 'printer_id'}"/>
+                    <filter string="Status" name="group_status" context="{'group_by': 'status'}"/>
+                    <filter string="Layout Type" name="group_layout" context="{'group_by': 'layout_type'}"/>
+                    <filter string="Created Date" name="group_created" context="{'group_by': 'created_at:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_virtual_iot_print_job" model="ir.actions.act_window">
+        <field name="name">Print Jobs</field>
+        <field name="res_model">virtual.iot.print.job</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_virtual_iot_print_job_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No print jobs found!
+            </p>
+            <p>
+                Print jobs are created automatically when you print from POS or manually send test prints.
+                Configure your Virtual IoT devices and printers to start printing.
+            </p>
+        </field>
+    </record>
+</odoo>

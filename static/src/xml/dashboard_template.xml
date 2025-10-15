@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="virtual_iot_connector.DashboardTemplate" owl="1">
+        <div class="o_virtual_iot_dashboard">
+            <div class="o_dashboard_header">
+                <h2>Virtual IoT Connector Dashboard</h2>
+                <p class="text-muted">Manage your virtual IoT devices and printers</p>
+            </div>
+            
+            <div class="row">
+                <!-- Statistics Cards -->
+                <div class="col-md-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 class="card-title">Devices</h4>
+                                    <h2 class="mb-0" t-esc="state.statistics.deviceCount"/>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fa fa-desktop fa-2x"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 class="card-title">Printers</h4>
+                                    <h2 class="mb-0" t-esc="state.statistics.printerCount"/>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fa fa-print fa-2x"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <div class="card bg-info text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 class="card-title">Print Jobs</h4>
+                                    <h2 class="mb-0" t-esc="state.statistics.pendingJobs"/>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fa fa-file-text fa-2x"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <div class="card bg-warning text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 class="card-title">Active</h4>
+                                    <h2 class="mb-0" t-esc="state.statistics.deviceCount"/>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fa fa-check-circle fa-2x"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <!-- Device Management Section -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Device Management</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-primary" t-on-click="openDevices">
+                                    <i class="fa fa-desktop me-2"/>
+                                    Manage Devices
+                                </button>
+                                <button class="btn btn-success" t-on-click="openPrinters">
+                                    <i class="fa fa-print me-2"/>
+                                    Manage Printers
+                                </button>
+                                <button class="btn btn-info" t-on-click="openPrintJobs">
+                                    <i class="fa fa-file-text me-2"/>
+                                    View Print Jobs
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Activity Section -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Recent Print Jobs</h5>
+                        </div>
+                        <div class="card-body">
+                            <div t-if="state.recentPrintJobs.length === 0" class="text-muted text-center py-3">
+                                No recent print jobs
+                            </div>
+                            <div t-else="">
+                                <div t-foreach="state.recentPrintJobs" t-as="job" t-key="job.id" class="d-flex justify-content-between align-items-center border-bottom py-2">
+                                    <div>
+                                        <strong t-esc="job.name"/>
+                                        <br/>
+                                        <small class="text-muted" t-esc="job.printer_name"/>
+                                    </div>
+                                    <div class="text-end">
+                                        <span t-attf-class="badge bg-{{job.state === 'completed' ? 'success' : job.state === 'failed' ? 'danger' : 'warning'}}" t-esc="job.state"/>
+                                        <br/>
+                                        <small class="text-muted" t-esc="job.create_date"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

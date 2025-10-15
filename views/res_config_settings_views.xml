@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Extend POS Configuration Settings to add Virtual IoT Preparation Printer -->
+    <record id="view_res_config_settings_inherit_virtual_iot_preparation" model="ir.ui.view">
+        <field name="name">res.config.settings.inherit.virtual.iot.preparation</field>
+        <field name="model">res.config.settings</field>
+        <field name="type">form</field>
+        <field name="inherit_id" ref="point_of_sale.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <!-- Add Virtual IoT Preparation Printer to the Preparation section -->
+            <xpath expr="//setting[@id='is_order_printer']//div[@class='content-group']" position="inside">
+                <div class="mt16" invisible="not pos_is_order_printer">
+                    <field name="pos_virtual_iot_device_id" invisible="1"/>
+                    <label string="Virtual IoT Preparation Printer" for="pos_virtual_preparation_printer_id" class="o_light_label"/>
+                    <field name="pos_virtual_preparation_printer_id" 
+                           domain="[('device_id', '=', pos_virtual_iot_device_id), ('printer_type', 'in', ['kitchen', 'receipt']), ('active', '=', True)]"
+                           invisible="not pos_config_id.use_virtual_iot or not pos_virtual_iot_device_id"/>
+                    <div class="text-muted" invisible="not pos_config_id.use_virtual_iot or not pos_config_id.virtual_iot_device_id">
+                        Use your Virtual IoT kitchen printer for preparation orders
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>
